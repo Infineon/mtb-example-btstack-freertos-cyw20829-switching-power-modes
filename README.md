@@ -1,6 +1,6 @@
 # AIROC&trade; CYW20829 Free RTOS switching power modes
 
-This code example demonstrates how to transition AIROC&trade; CYW20829 MCU between the following power modes:
+This code example demonstrates how to transition AIROC&trade; CYW20829/CYW89829 MCU between the following power modes:
 
 - Active
 - Sleep
@@ -10,7 +10,7 @@ This code example demonstrates how to transition AIROC&trade; CYW20829 MCU betwe
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-btstack-freertos-cyw20829-switching-power-modes)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzkxNzkiLCJTcGVjIE51bWJlciI6IjAwMi0zOTE3OSIsIkRvYyBUaXRsZSI6IkFJUk9DJnRyYWRlOyBDWVcyMDgyOSBGcmVlIFJUT1Mgc3dpdGNoaW5nIHBvd2VyIG1vZGVzIiwicmlkIjoieWFra3VuZGkiLCJEb2MgdmVyc2lvbiI6IjEuMC4wIiwiRG9jIExhbmd1YWdlIjoiRW5nbGlzaCIsIkRvYyBEaXZpc2lvbiI6Ik1DRCIsIkRvYyBCVSI6IklDVyIsIkRvYyBGYW1pbHkiOiJCVEFCTEUifQ==)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzkxNzkiLCJTcGVjIE51bWJlciI6IjAwMi0zOTE3OSIsIkRvYyBUaXRsZSI6IkFJUk9DJnRyYWRlOyBDWVcyMDgyOSBGcmVlIFJUT1Mgc3dpdGNoaW5nIHBvd2VyIG1vZGVzIiwicmlkIjoieWFra3VuZGkiLCJEb2MgdmVyc2lvbiI6IjEuMS4wIiwiRG9jIExhbmd1YWdlIjoiRW5nbGlzaCIsIkRvYyBEaXZpc2lvbiI6Ik1DRCIsIkRvYyBCVSI6IklDVyIsIkRvYyBGYW1pbHkiOiJCVEFCTEUifQ==)
 
 ## Overview
 
@@ -22,6 +22,8 @@ This code example shows how to change the following power modes of the devices.
 
 The code example uses the user button 1 (User BTN 1) to change the power modes. After the system goes to Hibernate mode, it waits for the wakeup sources, User button 2 (User BTN 2) to start the advertisement. This code example shows user button 1 as a wakeup source. **Figure 1** shows the state machine implemented in the firmware to execute the transitions.
 
+ **Note:** There is only button 1 on the kit CYW989829M2EVB-01. Button 2 is assigned to P1.0 (D3), you need to use a wire to connect P1.0 with GND to act as button pressing.
+
 **Figure 1. Switching power mode software state machine**
 
 ![](images/state_machine.png)
@@ -30,9 +32,10 @@ The code example uses the user button 1 (User BTN 1) to change the power modes. 
 
 - [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) v3.0 or later (tested with v3.0)
 - Board support package (BSP) minimum required version: 1.0.1
-   - CYW920829M2EVK-02: 1.0.1
+   - CYW920829M2EVK-02: 1.0.2
+   - CYW989829M2EVB-01: 1.0.1
 - Programming language: C
-- Associated parts: [AIROC&trade; CYW20829 Bluetooth&reg; LE SoC](https://www.infineon.com/cms/en/product/promopages/airoc20829)
+- Associated parts: [AIROC&trade; CYW20829 Bluetooth&reg; LE SoC](https://www.infineon.com/cms/en/product/promopages/airoc20829) and AIROC&trade; CYW89829 Bluetooth&reg; LE SoC
 
 ## Supported toolchains (make variable 'TOOLCHAIN')
 
@@ -41,6 +44,7 @@ The code example uses the user button 1 (User BTN 1) to change the power modes. 
 ## Supported kits (make variable 'TARGET')
 
 - AIROC&trade; CYW20829 Bluetooth&reg; LE Evaluation Kit (`CYW920829M2EVK-02`) – Default value of `TARGET`
+- AIROC&trade; CYW89829 Bluetooth&reg; LE evaluation kit – (`CYW989829M2EVB-01`)
 
 
 ## Hardware setup
@@ -250,12 +254,13 @@ For more details, see the [ModusToolbox&trade; tools package user guide](https:/
 
 7. Use the KitProg3 COM port to view the Bluetooth&reg; stack and application trace messages in the terminal window.
 
-8. Measure the current consumption on required power rails as shown in Figure 6.
+8. Measure the current consumption on required power rails as shown in Figure 6. For CYW989829M2EVB-01 board, VDDPA is bonded to VBAT in the BLE radio card. 
 
 
    **Figure 6. Power rails**
 
    ![](images/power_rails.png)
+   ![](images/power_rails_2.png)
 
 ## Debugging
 
@@ -295,6 +300,19 @@ Battery Service is used to simulate the battery level, which changes continuousl
 
 ![](images/active_connected.png)
 
+> **Note**- The connected idle power consumption provided on the following tables are measured with the 1 second connection interval. The Connected idle average current consumption vary based on the bluetooth connection interval.
+
+**Steps to configure the CYSMART windows application to configure the 1 second connection interval**
+1. Open the Windows CYSMART application and select the Cysmart BLE dongle and click on connect.
+![](images/dongle_select.png)
+2. Click on Configure Master Settings and then click on the Connection parameters. Upadte the Connection Interval Minimum, Connection Interval Maximum, Connection Latency and Supervisom Timeout as shown in the below image and click OK.
+![](images/conn_param_sst.png)
+3. Click on the start scan and choose the LOW Power 80829 in the below window and click on connect.
+![](images/connect.png)
+
+
+>**Note** The connection paramter can be updated from the peripheral side also using the ***wiced_bt_l2cap_update_ble_conn_params (wiced_bt_device_address_t rem_bdRa, uint16_t min_int, uint16_t max_int, uint16_t latency, uint16_t timeout)*** API.
+ 
 **Table 1.  CYW20829 current in different modes PILO with 3 V**
 
  Power modes  | Connection idle  |  Disconnection idle   
@@ -317,7 +335,18 @@ Hibernate     |NA                |2.1 uA
 
 <br>
 
-> **Note:** **Table 1** and **Table 2** show the cumulative power consumption of VBAT, VDDPA, and VDDIO power rails and the voltage across the TP1 will be 0.9 V when the device is in DeepSleep mode. When CYW920829M2EVK-02 external flash is connected to VDDIO and voltage regulator, the measured current on VDDIO may depend on the selected external serial flash and voltage regulator.
+**Table 3.  CYW89829 current in different modes PILO with 3 V**
+
+ Power modes  | Connection idle  |  Disconnection idle   
+ :-------     |:------------     | :------------      
+MCUSS Sleep   |2.38 mA            | 2.37 mA
+DeepSleep     |21.78 uA           |8.3 uA
+DeepSleep-RAM |21.44 uA           |8.27 uA
+Hibernate     |NA                |2.74 uA
+
+<br>
+
+> **Note:** **Table 1**, **Table 2** and **Table 3** show the cumulative power consumption of VBAT, VDDPA, and VDDIO power rails and the voltage across the TP1 will be 0.9 V when the device is in DeepSleep mode. When CYW920829M2EVK-02 external flash is connected to VDDIO and voltage regulator, the measured current on VDDIO may depend on the selected external serial flash and voltage regulator.
 
 
 
@@ -355,6 +384,7 @@ Document title: *CE239179* – *CYW20829 Free RTOS switching power modes*
  Version | Description of change 
  ------- | --------------------- 
  1.0.0   | New code example      
+ 1.1.0   | Added support for CYW989829M2EVB-01
 <br>
 
 All referenced product or service names and trademarks are the property of their respective owners.

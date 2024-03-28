@@ -8,7 +8,7 @@
  *
  *
  *******************************************************************************
- * Copyright 2021-2023, Cypress Semiconductor Corporation (an Infineon company) or
+ * Copyright 2021-2024, Cypress Semiconductor Corporation (an Infineon company) or
  * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
  *
  * This software, including source code, documentation and related
@@ -547,43 +547,31 @@ wiced_bt_gatt_status_t app_bt_set_value(uint16_t attr_handle,
 {
     wiced_bt_gatt_status_t status = WICED_BT_GATT_INVALID_HANDLE;
 
-    for (int i = 0; i < app_gatt_db_ext_attr_tbl_size; i++)
-    {
-        /* Check for a matching handle entry */
-        if ((app_gatt_db_ext_attr_tbl[i].handle == attr_handle) &&
-            (app_gatt_db_ext_attr_tbl[i].max_len >= len))
-        {
-            /* Detected a matching handle in the external lookup table */
-            /* Value fits within the supplied buffer; copy over the value */
-            app_gatt_db_ext_attr_tbl[i].cur_len = len;
-            memset(app_gatt_db_ext_attr_tbl[i].p_data, 0x00, app_gatt_db_ext_attr_tbl[i].max_len);
-            memcpy(app_gatt_db_ext_attr_tbl[i].p_data, p_val, app_gatt_db_ext_attr_tbl[i].cur_len);
-
-            if (memcmp(app_gatt_db_ext_attr_tbl[i].p_data, p_val, app_gatt_db_ext_attr_tbl[i].cur_len) == 0)
+            if( (attr_handle== HDLD_BAS_BATTERY_LEVEL_CLIENT_CHAR_CONFIG) &&
+                (app_bas_battery_level_client_char_config_len>=len) )
             {
-                status = WICED_BT_GATT_SUCCESS;
-            }
+                memcpy(app_bas_battery_level_client_char_config, p_val, len);
+                if(app_bas_battery_level_client_char_config[0])
+                {
+                    printf( "Battery Server Notifications Enabled \r\n");
+                    /* Start battery level timer */
+                    app_bt_batt_level_init(1);
+                    status = WICED_BT_GATT_SUCCESS;
+                }
+                else
+                {
+                    status = WICED_BT_GATT_SUCCESS;
+                    printf( "Battery Server Notifications Disabled \r\n");
+                }
 
-            if( (app_gatt_db_ext_attr_tbl[i].handle == HDLD_BAS_BATTERY_LEVEL_CLIENT_CHAR_CONFIG) &&
-                (GATT_CLIENT_CONFIG_NOTIFICATION == app_bas_battery_level_client_char_config[0]) )
-            {
-                printf( "Battery Server Notifications Enabled \r\n");
-                /* Start battery level timer */
-                app_bt_batt_level_init(1);
             }
             else
             {
-                printf( "Battery Server Notifications Disabled \r\n");
+                /* Value to write does not meet size constraints */
+                status= WICED_BT_GATT_INVALID_ATTR_LEN;
+                printf( "Invalid attribute length\r\n");
             }
-            break;
-        }
-        else
-        {
-            /* Value to write will not fit within the table */
-            status = WICED_BT_GATT_INVALID_ATTR_LEN;
-            printf( "Invalid attribute length\r\n");
-        }
-    }
+
     if (WICED_BT_GATT_SUCCESS != status)
     {
         printf( "%s() FAILED %d \r\n", __func__, status);

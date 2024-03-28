@@ -7,7 +7,7 @@
 #
 ################################################################################
 # \copyright
-# Copyright 2018-2023, Cypress Semiconductor Corporation (an Infineon company)
+# Copyright 2018-2024, Cypress Semiconductor Corporation (an Infineon company)
 # SPDX-License-Identifier: Apache-2.0
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,6 +58,11 @@ APPNAME=mtb-example-btstack-freertos-cyw20829-switching-power-modes
 #
 # See also: CY_COMPILER_PATH below
 TOOLCHAIN=GCC_ARM
+
+CY_SUPPORTED_TOOLCHAINS=GCC_ARM
+CY_TOOLCHAIN_ARM_NOT_SUPPORTED = TRUE
+CY_TOOLCHAIN_IAR_NOT_SUPPORTED = TRUE
+
 
 # Default build configuration. Options include:
 #
